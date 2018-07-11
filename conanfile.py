@@ -20,6 +20,9 @@ occurring problems in numerical linear algebra"""
     def source_subfolder(self):
         return "sources"
 
+    def requirements(self):
+        self.requires("openblas/0.3.0@darcamo/stable")
+
     def package_id(self):
         if self.options.visual_studio:
             self.info.settings.compiler = "Visual Studio"
@@ -60,14 +63,15 @@ conan_basic_setup()""")
             raise Exception("This library cannot be built with Visual Studio. Please use MinGW to "
                             "build it and option 'visual_studio=True' to build and consume.")
         cmake = CMake(self)
+        cmake.definitions["USE_OPTIMIZED_BLAS"] = True
         cmake.definitions["BUILD_SHARED_LIBS"] = True
         cmake.definitions["CMAKE_GNUtoMS"] = self.options.visual_studio
         cmake.definitions["BUILD_TESTING"] = False
         cmake.definitions["LAPACKE"] = True
         cmake.definitions["CBLAS"] = True
         cmake.configure(source_folder=self.source_subfolder)
-        cmake.build(target="blas")
-        cmake.build(target="cblas")
+        # cmake.build(target="blas")
+        # cmake.build(target="cblas")
         cmake.build(target="lapack")
         cmake.build(target="lapacke")
 
